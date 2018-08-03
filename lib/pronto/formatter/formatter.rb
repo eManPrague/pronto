@@ -16,7 +16,7 @@ module Pronto
       'github_pr' => GithubPullRequestFormatter,
       'github_pr_review' => GithubPullRequestReviewFormatter,
       'gitlab' => GitlabFormatter,
-      'gitlab_pr' => GitlabMergeRequestReviewFormatter,
+      'gitlab_mr' => GitlabMergeRequestReviewFormatter,
       'bitbucket' => BitbucketFormatter,
       'bitbucket_pr' => BitbucketPullRequestFormatter,
       'bitbucket_server_pr' => BitbucketServerPullRequestFormatter,

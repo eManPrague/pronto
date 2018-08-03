@@ -1,11 +1,8 @@
-require 'byebug'
-
 module Pronto
   class Gitlab < Client
     def commit_comments(sha)
       @comment_cache[sha.to_s] ||= begin
         client.commit_comments(slug, sha, per_page: 500).map do |comment|
-          byebug
           Comment.new(sha, comment.note, comment.path, comment.line)
         end
       end
@@ -16,6 +13,8 @@ module Pronto
         arr = []
         client.merge_request_discussions(slug, pull_id).each do |comment|
           comment.notes.each do |note|
+            next unless note['position']
+
             arr << Comment.new(
               sha,
               note['body'],
@@ -40,12 +39,10 @@ module Pronto
             new_line: comment.position,
             old_line: nil,
             head_sha: comment.sha,
-            start_sha: comment.sha,
-            base_sha: comment.sha
+            start_sha: @patches.commit,
+            base_sha: @patches.commit
           }
         }
-
-        byebug
 
         client.create_merge_request_discussion(slug, pull_id, options)
       end
@@ -56,16 +53,6 @@ module Pronto
       client.create_commit_comment(slug, comment.sha, comment.body,
                                    path: comment.path, line: comment.position,
                                    line_type: 'new')
-    end
-
-    def create_pull_comment(comment)
-      if comment.path && comment.position
-        @config.logger.log("Creating pull request comment on #{pull_id}")
-        client.create_merge_request_discussion(slug, pull_id, comment.body,
-                                   comment.path, comment.position)
-      else
-        create_commit_comment(comment)
-      end
     end
 
     private
@@ -88,6 +75,7 @@ module Pronto
       @pull ||= if env_pull_id
                   pull_requests.find { |pr| pr.iid.to_i == env_pull_id }
                 elsif @repo.branch
+                  # TODO: Update for gitlab
                   pull_requests.find do |pr|
                     pr.source['branch']['name'] == @repo.branch
                   end

@@ -10,7 +10,6 @@ module Pronto
       end
 
       def existing_comments(_, client, repo)
-        byebug
         sha = repo.head_commit_sha
         comments = client.pull_comments(sha)
         grouped_comments(comments)
