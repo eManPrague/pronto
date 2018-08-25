@@ -2,7 +2,7 @@ module Pronto
   class Gitlab < Client
     def commit_comments(sha)
       @comment_cache[sha.to_s] ||= begin
-        client.commit_comments(slug, sha, per_page: 500).map do |comment|
+        client.commit_comments(slug, sha).auto_paginate.map do |comment|
           Comment.new(sha, comment.note, comment.path, comment.line)
         end
       end
@@ -11,7 +11,7 @@ module Pronto
     def pull_comments(sha)
       @comment_cache["#{pull_id}/#{sha}"] ||= begin
         arr = []
-        client.merge_request_discussions(slug, pull_id).each do |comment|
+        client.merge_request_discussions(slug, pull_id).auto_paginate.each do |comment|
           comment.notes.each do |note|
             next unless note['position']
 
