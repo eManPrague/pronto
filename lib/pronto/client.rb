@@ -1,8 +1,9 @@
 module Pronto
   class Client
-    def initialize(repo, patches)
+    attr_accessor :patches
+
+    def initialize(repo)
       @repo = repo
-      @patches = patches
       @config = Config.new
       @comment_cache = {}
       @pull_id_cache = {}

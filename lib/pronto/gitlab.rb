@@ -75,15 +75,14 @@ module Pronto
       @pull ||= if env_pull_id
                   pull_requests.find { |pr| pr.iid.to_i == env_pull_id }
                 elsif @repo.branch
-                  # TODO: Update for gitlab
                   pull_requests.find do |pr|
-                    pr.source['branch']['name'] == @repo.branch
+                    pr.source_branch == @repo.branch
                   end
                 end
     end
 
     def pull_requests
-      @pull_requests ||= client.merge_requests(slug)
+      @pull_requests ||= client.merge_requests(slug, { state: :opened, source_branch: @repo.branch }).auto_paginate
     end
 
     def slug_regex(url)
