@@ -9,7 +9,6 @@ module Pronto
 
       def submit_comments(client, comments)
         comments.each { |comment| client.create_pull_comment(comment) }
-        # TODO: This is here why? It looks like Github specific stuffs
       rescue Octokit::UnprocessableEntity, HTTParty::Error => e
         $stderr.puts "Failed to post: #{e.message}"
       end
