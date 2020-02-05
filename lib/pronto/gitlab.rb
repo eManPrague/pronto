@@ -37,6 +37,7 @@ module Pronto
           body: comment.body,
           position: position_sha.dup.merge(
             new_path: comment.path,
+            old_path: comment.path,
             position_type: 'text',
             new_line: comment.position,
             old_line: nil,
